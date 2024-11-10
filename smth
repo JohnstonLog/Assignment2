@@ -1,1 +1,90 @@
-sd
+Imports System.Collections.Generic
+Imports System.IO
+
+Module modulemain
+
+    ' Classes
+    Public MustInherit Class Events
+
+        Public Property event_time As Integer
+        Public Property customer_number As Integer
+
+        Public Sub New(event_time As Integer, customer_number As Integer)
+            Me.event_time = event_time
+            Me.customer_number = customer_number
+        End Sub
+
+        'method to determine event type
+        Public MustOverride Function GetEventType() As String
+
+    End Class
+
+
+    Public Class arrivalEvent
+        Inherits Events
+
+        Public Property processing_time As Integer
+
+        Public Sub New(event_time As Integer, processing_time As Integer, customer_number As Integer)
+            MyBase.New(event_time, customer_number)
+            Me.processing_time = processing_time
+        End Sub
+
+        Public Overrides Function GetEventType() As String
+            Throw New NotImplementedException()
+        End Function
+
+    End Class
+
+
+    Public Class departureEvent
+        Inherits Events
+
+        Public Sub New(event_time As Integer, customer_number As Integer)
+            MyBase.New(event_time, customer_number)
+        End Sub
+
+        Public Overrides Function GetEventType() As String
+            Throw New NotImplementedException()
+        End Function
+
+    End Class
+
+    ' Main Method
+    Sub Main()
+
+        'initialize the event list and the event queue
+        Dim eventList As New List(Of arrivalEvent)
+        Dim eventQueue As New SortedList(Of String, Events) 'use sorted list as a priority queue
+
+
+
+
+    End Sub
+
+    'other methods
+
+    'enqueue and dequeue methods for sorted list
+
+    ' enqueue event into the SortedList with a composite key
+    ' composite key used to distiguish between different events with the same event time
+    ' (sorted lists require unique keys)
+    Sub Enqueue(eventQueue As SortedList(Of String, Events), event_type As Events)
+        ' Create a composite key based on EventTime and CustomerNumber
+        Dim key As String = $"{event_type.event_time:D4}-{event_type.customer_number:D4}"
+        eventQueue.Add(key, event_type)
+    End Sub
+
+
+    'dequeue the highest-priority Event
+    ' sorted by event time then by customer number
+    Function Dequeue(eventQueue As SortedList(Of String, Events)) As Events
+        Dim firstKey As String = eventQueue.Keys(0)
+        Dim firstEvent As Events = eventQueue(firstKey)
+        eventQueue.RemoveAt(0) ' Remove the item from the queue
+        Return firstEvent
+    End Function
+
+
+
+End Module
